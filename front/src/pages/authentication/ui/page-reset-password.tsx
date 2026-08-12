@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { FormField } from '@/components/ui/form'
 import { InputText } from '@/components/ui/input-text'
 import { UseFormReturn } from 'react-hook-form'
-import { Link, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import { type ResetPasswordSchema } from '../schemas/reset-password.schema'
-import { AlertTriangle, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import AuthShell, { AuthFooterLink } from './auth-shell'
 import './page-login.css'
 import type { PublicPasswordPolicy } from '@/api/password-policy.api'
 import PasswordRequirements from '../components/password-requirements'
@@ -32,125 +32,92 @@ export default function PageResetPassword({
   const isFormSubmittable = form.formState.isValid && !form.formState.isSubmitting && !isPending
 
   return (
-    <div className='login-shell relative flex min-h-svh items-center justify-center px-6 py-10'>
-      <div className='relative z-10 w-full max-w-sm md:max-w-md lg:max-w-lg'>
-        <div className='flex flex-col gap-6'>
-          <Card className='login-card overflow-hidden border p-0 shadow-sm'>
-            <CardContent className='grid gap-0 p-0'>
-              <div className='p-8 md:p-10'>
-                <div className='flex flex-col gap-7'>
-                  <div className='space-y-2'>
-                    <div className='flex items-center gap-3'>
-                      <img
-                        src='/logo_ferriskey.png'
-                        alt='FerrisKey'
-                        className='h-7 w-7 object-contain'
-                      />
-                      <p className='text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground'>
-                        FerrisKey
-                      </p>
-                    </div>
-                    <h1 className='login-title text-3xl font-semibold tracking-tight text-foreground'>
-                      Set a new password
-                    </h1>
-                  </div>
-
-                  {tokenStatus === 'loading' ? (
-                    <LoadingMessage />
-                  ) : tokenStatus === 'invalid' ? (
-                    <InvalidTokenMessage realmName={realm_name} />
-                  ) : (
-                    <>
-                      {errorMessage && (
-                        <div className='rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive'>
-                          {errorMessage}
-                        </div>
-                      )}
-                      <form onSubmit={form.handleSubmit(onSubmit)}>
-                        <div className='flex flex-col gap-7'>
-                          <div className='grid gap-3'>
-                            <FormField
-                              control={form.control}
-                              name='password'
-                              render={({ field }) => (
-                                <InputText
-                                  {...field}
-                                  label='New password'
-                                  name='password'
-                                  type='password'
-                                  className='w-full'
-                                  error={
-                                    form.formState.errors.password?.message &&
-                                    password.length > 0
-                                      ? form.formState.errors.password.message
-                                      : undefined
-                                  }
-                                />
-                              )}
-                            />
-                            <PasswordRequirements password={password} policy={policy} />
-                          </div>
-                          <div className='grid gap-3'>
-                            <FormField
-                              control={form.control}
-                              name='confirmPassword'
-                              render={({ field }) => (
-                                <InputText
-                                  {...field}
-                                  label='Confirm password'
-                                  name='confirmPassword'
-                                  type='password'
-                                  className='w-full'
-                                  error={form.formState.errors.confirmPassword?.message}
-                                />
-                              )}
-                            />
-                          </div>
-                          <Button
-                            type='submit'
-                            className='w-full rounded-lg py-5 text-sm'
-                            disabled={!isFormSubmittable}
-                          >
-                            {isPending ? 'Resetting...' : 'Reset password'}
-                          </Button>
-                        </div>
-                      </form>
-                    </>
-                  )}
-                </div>
+    <AuthShell
+      title='Set a new password'
+      refLabel='hamoc'
+      footer={
+        <AuthFooterLink
+          linkText='Back to login'
+          to={`/realms/${realm_name}/authentication/login`}
+        />
+      }
+    >
+      {tokenStatus === 'loading' ? (
+        <LoadingMessage />
+      ) : tokenStatus === 'invalid' ? (
+        <InvalidTokenMessage realmName={realm_name} />
+      ) : (
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className='flex flex-col gap-4'>
+            {errorMessage && (
+              <div className='rounded-md border border-destructive/30 border-l-[3px] border-l-destructive bg-destructive/10 px-3 py-2.5 text-[13px] text-destructive'>
+                {errorMessage}
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
+            )}
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field }) => (
+                <div className='flex flex-col gap-1'>
+                  <InputText
+                    {...field}
+                    label='New password'
+                    name='password'
+                    type='password'
+                    className='w-full'
+                    error={
+                      form.formState.errors.password?.message && password.length > 0
+                        ? form.formState.errors.password.message
+                        : undefined
+                    }
+                  />
+                  <PasswordRequirements password={password} policy={policy} />
+                </div>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='confirmPassword'
+              render={({ field }) => (
+                <InputText
+                  {...field}
+                  label='Confirm password'
+                  name='confirmPassword'
+                  type='password'
+                  className='w-full'
+                  error={form.formState.errors.confirmPassword?.message}
+                />
+              )}
+            />
+            <Button type='submit' className='w-full' disabled={!isFormSubmittable}>
+              {isPending ? 'Resetting...' : 'Reset password'}
+            </Button>
+          </div>
+        </form>
+      )}
+    </AuthShell>
   )
 }
 
 function LoadingMessage() {
   return (
-    <div className='flex flex-col items-center gap-4 py-4'>
-      <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
-      <p className='text-center text-sm text-muted-foreground'>Verifying your reset link...</p>
+    <div className='flex flex-col items-center gap-3 py-4'>
+      <Loader2 className='h-5 w-5 animate-spin text-muted-foreground' />
+      <p className='text-center text-[13px] text-muted-foreground'>Verifying your reset link...</p>
     </div>
   )
 }
 
 function InvalidTokenMessage({ realmName }: { realmName?: string }) {
   return (
-    <div className='flex flex-col items-center gap-4 py-4'>
-      <div className='flex h-12 w-12 items-center justify-center rounded-full bg-amber-100'>
-        <AlertTriangle className='h-6 w-6 text-amber-600' />
-      </div>
-      <p className='text-center text-sm text-muted-foreground'>
+    <div className='flex flex-col gap-4'>
+      <div className='auth-banner auth-banner--warning'>
         This reset link is invalid or has expired.
-      </p>
-      <Link
+      </div>
+      <AuthFooterLink
+        linkText='Request a new reset link'
         to={`/realms/${realmName}/authentication/forgot-password`}
-        className='font-semibold text-foreground underline underline-offset-4 text-sm'
-      >
-        Request a new reset link
-      </Link>
+      />
     </div>
   )
 }

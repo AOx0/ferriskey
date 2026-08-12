@@ -41,7 +41,7 @@ export default function PageVerifyEmail({
           ))
           .with('expired', () => (
             <>
-              <XCircle className='w-16 h-16 mx-auto text-amber-500' />
+              <XCircle className='w-16 h-16 mx-auto text-warning-foreground' />
               <h1 className='text-2xl font-bold'>Link expired</h1>
               <p className='text-muted-foreground'>
                 This verification link has expired. Please register again or request a new link.
@@ -50,7 +50,7 @@ export default function PageVerifyEmail({
           ))
           .with('error', () => (
             <>
-              <XCircle className='w-16 h-16 mx-auto text-red-500' />
+              <XCircle className='w-16 h-16 mx-auto text-destructive' />
               <h1 className='text-2xl font-bold'>Verification failed</h1>
               <p className='text-muted-foreground'>The verification link is invalid.</p>
             </>

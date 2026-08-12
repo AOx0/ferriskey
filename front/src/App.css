@@ -24,6 +24,9 @@
   --accent: #eef4f9;
   --accent-foreground: #2c567a;
   --destructive: #a43535;
+  --success: #2f6b47;
+  --success-foreground: #f2f7f3;
+  --warning-foreground: #8a5f20;
   --border: #e2e4e9;
   --input: #e2e4e9;
   --ring: #2f5d82;
@@ -59,6 +62,9 @@
   --accent: #24303c;
   --accent-foreground: #9cc3e2;
   --destructive: #e09090;
+  --success: #57ab7d;
+  --success-foreground: #eef6f0;
+  --warning-foreground: #d9a75f;
   --border: #33373e;
   --input: #33373e;
   --ring: #4a7ca8;
@@ -98,6 +104,9 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning-foreground: var(--warning-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

@@ -20,7 +20,7 @@ function RuleRow({ label, met, show }: RuleRowProps) {
   return (
     <li className='flex items-center gap-2 text-sm'>
       {met ? (
-        <Check className='h-3.5 w-3.5 shrink-0 text-green-500' />
+        <Check className='h-3.5 w-3.5 shrink-0 text-success' />
       ) : (
         <X className='h-3.5 w-3.5 shrink-0 text-destructive' />
       )}

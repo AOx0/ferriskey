@@ -92,8 +92,8 @@ export default function VerifyEmailFeature() {
   return (
     <div className='flex flex-col items-center justify-center min-h-screen p-4'>
       <div className='max-w-md w-full space-y-6 text-center'>
-        <div className='mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center'>
-          <Mail className='w-8 h-8 text-blue-600' />
+        <div className='mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center'>
+          <Mail className='w-8 h-8 text-primary' />
         </div>
 
         <h1 className='text-2xl font-bold'>Verify your email</h1>
