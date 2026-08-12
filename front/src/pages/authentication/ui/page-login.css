@@ -137,6 +137,34 @@
   font-family: inherit;
 }
 
+/* ---- browser autofill ------------------------------------------------ */
+/* The UA paints autofilled inputs opaque light-yellow, which wrecks the
+   dark theme and covers the floating label. background-color is ignored
+   there, so repaint via the inset box-shadow trick; and since React
+   never receives an input event for autofill, float the label from CSS
+   (:has) exactly like the focused state does. */
+.login-card input:-webkit-autofill,
+.login-card input:-webkit-autofill:hover,
+.login-card input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-box-shadow: inset 0 0 0 1000px var(--background);
+  box-shadow: inset 0 0 0 1000px var(--background);
+  caret-color: var(--foreground);
+}
+.login-card input:autofill {
+  -webkit-text-fill-color: var(--foreground);
+  background-color: var(--background) !important;
+  box-shadow: inset 0 0 0 1000px var(--background);
+  caret-color: var(--foreground);
+}
+.login-card .input:has(input:autofill) label,
+.login-card .input:has(input:-webkit-autofill) label {
+  translate: none !important;
+  transform: none !important;
+  font-size: 0.75rem !important;
+  line-height: 1rem !important;
+}
+
 /* ---- status banners (success / warning) ------------------------------ */
 /* Error red stays reserved for errors; these are the theme-aware
    info/warning/success companions. */
