@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { Eye, EyeClosed } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export interface InputTextProps {
   name: string
@@ -48,6 +48,30 @@ export function InputText({
   const inputRef = useRef<HTMLDivElement>(null)
   const currentValue = typeof value === 'number' && Number.isNaN(value) ? '' : value
   const [currentType, setCurrentType] = useState<string>(type)
+
+  // Page-load autofill (Firefox especially) writes straight into the DOM:
+  // no input event, no animationstart, nothing reaches React — the state
+  // stays empty, the label stays down over the filled value, and a submit
+  // would even send an empty field. Reconcile by polling briefly after
+  // mount: if the DOM holds a value React doesn't know about, adopt it.
+  useEffect(() => {
+    const timers = [150, 600, 1500].map((ms) =>
+      setTimeout(() => {
+        const el = inputRef.current?.querySelector('input')
+        if (el && el.value && String(currentValue ?? '').length === 0) {
+          setAutofilled(true)
+          if (type === 'number') {
+            onChange?.(el.valueAsNumber)
+          } else {
+            onChange?.(el.value)
+          }
+        }
+      }, ms)
+    )
+    return () => timers.forEach(clearTimeout)
+    // mount-only on purpose: this races the browser's fill, not the user
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const hasFocus = focused
   const hasLabelUp =
