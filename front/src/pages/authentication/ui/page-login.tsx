@@ -94,7 +94,7 @@ export default function PageLogin({
                               className='h-7 w-7 object-contain'
                             />
                             <p className='text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground'>
-                              FerrisKey
+                              Hamoc
                             </p>
                           </div>
                           <h1 className='login-title text-3xl font-semibold tracking-tight text-foreground'>
@@ -250,7 +250,7 @@ function MagicLinkFormView({
               <div className='flex items-center gap-3'>
                 <img src='/logo_ferriskey.png' alt='FerrisKey' className='h-7 w-7 object-contain' />
                 <p className='text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground'>
-                  FerrisKey
+                  Hamoc
                 </p>
               </div>
               <h1 className='login-title text-3xl font-semibold tracking-tight text-foreground'>
@@ -296,7 +296,7 @@ function MagicLinkSentView({ onBack }: { onBack?: () => void }) {
         <div className='flex items-center gap-3 self-start'>
           <img src='/logo_ferriskey.png' alt='FerrisKey' className='h-7 w-7 object-contain' />
           <p className='text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground'>
-            FerrisKey
+            Hamoc
           </p>
         </div>
         <div className='flex h-14 w-14 items-center justify-center rounded-full bg-primary/10'>
@@ -348,7 +348,7 @@ export function LoginErrorPage({ errorMessage }: { errorMessage: string }) {
                         className='h-7 w-7 object-contain'
                       />
                       <p className='text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground'>
-                        FerrisKey
+                        Hamoc
                       </p>
                     </div>
                     <h1 className='login-title text-3xl font-semibold tracking-tight text-foreground'>

@@ -1,5 +1,10 @@
+/* Hamoc login skin — matches the whatsapp-desk look (desk-web/src/ui.rs):
+   Inter, cool blue-grey neutrals + steel-blue accent (from the shadcn
+   tokens in App.css), 6px radius, a subtle surface shadow. */
+
 .login-shell {
-  background: white;
+  background: var(--background);
+  font-family: Inter, system-ui, -apple-system, sans-serif;
 }
 
 .login-title {
@@ -8,8 +13,27 @@
 
 .login-card {
   border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(23, 26, 31, 0.1);
 }
 
-.dark .login-shell {
-  background: black;
+.dark .login-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+}
+
+/* Desk radius on fields and buttons (not pills). The field border/bg
+   live on a `.input` wrapper, not the raw <input>. */
+.login-card .input,
+.login-card button {
+  border-radius: 6px !important;
+}
+
+/* Brand-only header: no crab logo, and hide the realm-name heading so
+   the card leads with the HAMOC wordmark alone. */
+.login-card img[alt='FerrisKey'] {
+  display: none;
+}
+
+.login-card .login-title {
+  display: none;
 }
