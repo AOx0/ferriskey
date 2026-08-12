@@ -52,23 +52,30 @@ export function InputText({
   // Page-load autofill (Firefox especially) writes straight into the DOM:
   // no input event, no animationstart, nothing reaches React — the state
   // stays empty, the label stays down over the filled value, and a submit
-  // would even send an empty field. Reconcile by polling briefly after
-  // mount: if the DOM holds a value React doesn't know about, adopt it.
+  // would even send an empty field. Watch the DOM until the user starts
+  // interacting (or we give up) and adopt any value React doesn't know
+  // about. An interval, not one-shot timers: fill timing varies by
+  // browser, profile and password-manager latency.
+  const latestValue = useRef(currentValue)
+  latestValue.current = currentValue
   useEffect(() => {
-    const timers = [150, 600, 1500].map((ms) =>
-      setTimeout(() => {
-        const el = inputRef.current?.querySelector('input')
-        if (el && el.value && String(currentValue ?? '').length === 0) {
-          setAutofilled(true)
-          if (type === 'number') {
-            onChange?.(el.valueAsNumber)
-          } else {
-            onChange?.(el.value)
-          }
-        }
-      }, ms)
-    )
-    return () => timers.forEach(clearTimeout)
+    const started = Date.now()
+    const iv = setInterval(() => {
+      const el = inputRef.current?.querySelector('input')
+      if (!el) return
+      const reactEmpty = String(latestValue.current ?? '').length === 0
+      if (el.value && reactEmpty && document.activeElement !== el) {
+        setAutofilled(true)
+        onChange?.(type === 'number' ? el.valueAsNumber : el.value)
+        clearInterval(iv)
+        return
+      }
+      // stop once React caught up on its own, or after a grace window
+      if ((el.value && !reactEmpty) || Date.now() - started > 15000) {
+        clearInterval(iv)
+      }
+    }, 300)
+    return () => clearInterval(iv)
     // mount-only on purpose: this races the browser's fill, not the user
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
