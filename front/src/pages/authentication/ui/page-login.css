@@ -105,14 +105,28 @@
 
 /* ---- density -------------------------------------------------------- */
 /* Fields: the floating-label wrapper stays (tests + a11y rely on the
-   DOM structure), we only compact it. */
+   DOM structure), we only compact it. The geometry must survive user
+   font clamps (Firefox "minimum font size", Linux DPI scaling): the
+   raised label gets real headroom, pins to the top, and paints above
+   the input — otherwise the autofill repaint decapitates it. */
 .login-card .input {
-  min-height: 44px;
+  min-height: 52px;
   border-radius: 6px !important;
   background: var(--background);
 }
+.login-card .input label {
+  z-index: 1;
+  line-height: 1.15;
+}
+.login-card .input:not(.input--label-up):not(.input--focused) label {
+  translate: 0 15px !important;
+}
+.login-card .input.input--label-up label,
+.login-card .input.input--focused label {
+  translate: 0 4px !important;
+}
 .login-card .input .input__value {
-  bottom: 5px;
+  bottom: 6px;
 }
 .login-card button {
   border-radius: 6px !important;
