@@ -52,7 +52,7 @@ export default function PageVerifyEmail({
           ))
           .with(VERIFY_STATE.EXPIRED, () => (
             <>
-              <XCircle className='w-16 h-16 mx-auto text-amber-500' />
+              <XCircle className='w-16 h-16 mx-auto text-warning-foreground' />
               <h1 className='text-2xl font-bold'>{t('verify_email_state.expired.title')}</h1>
               <p className='text-muted-foreground'>
                 {t('verify_email_state.expired.description')}
@@ -61,7 +61,7 @@ export default function PageVerifyEmail({
           ))
           .with(VERIFY_STATE.ERROR, () => (
             <>
-              <XCircle className='w-16 h-16 mx-auto text-red-500' />
+              <XCircle className='w-16 h-16 mx-auto text-destructive' />
               <h1 className='text-2xl font-bold'>{t('verify_email_state.failed.title')}</h1>
               <p className='text-muted-foreground'>
                 {t('verify_email_state.failed.description')}

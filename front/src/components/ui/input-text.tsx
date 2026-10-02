@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { Eye, EyeClosed } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export interface InputTextProps {
   name: string
@@ -39,15 +39,50 @@ export function InputText({
   required = false,
 }: InputTextProps) {
   const [focused, setFocused] = useState<boolean>(false)
+  // Browser autofill never reaches React state on controlled inputs
+  // (no input event on page-load fill), so the floating label would sit
+  // on top of the filled value. A keyframe on input:autofill (see
+  // index.css) fires animationstart, which is the one signal that does
+  // cross over — we use it to raise the label.
+  const [autofilled, setAutofilled] = useState<boolean>(false)
   const inputRef = useRef<HTMLDivElement>(null)
-  const currentValue =
-    typeof value === 'number' && Number.isNaN(value) ? '' : value
+  const currentValue = typeof value === 'number' && Number.isNaN(value) ? '' : value
   const [currentType, setCurrentType] = useState<string>(type)
+
+  // Page-load autofill (Firefox especially) writes straight into the DOM:
+  // no input event, no animationstart, nothing reaches React — the state
+  // stays empty, the label stays down over the filled value, and a submit
+  // would even send an empty field. Watch the DOM until the user starts
+  // interacting (or we give up) and adopt any value React doesn't know
+  // about. An interval, not one-shot timers: fill timing varies by
+  // browser, profile and password-manager latency.
+  const latestValue = useRef(currentValue)
+  latestValue.current = currentValue
+  useEffect(() => {
+    const started = Date.now()
+    const iv = setInterval(() => {
+      const el = inputRef.current?.querySelector('input')
+      if (!el) return
+      const reactEmpty = String(latestValue.current ?? '').length === 0
+      if (el.value && reactEmpty && document.activeElement !== el) {
+        setAutofilled(true)
+        onChange?.(type === 'number' ? el.valueAsNumber : el.value)
+        clearInterval(iv)
+        return
+      }
+      // stop once React caught up on its own, or after a grace window
+      if ((el.value && !reactEmpty) || Date.now() - started > 15000) {
+        clearInterval(iv)
+      }
+    }, 300)
+    return () => clearInterval(iv)
+    // mount-only on purpose: this races the browser's fill, not the user
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const hasFocus = focused
   const hasLabelUp =
-    hasFocus ||
-    (currentValue?.toString() && currentValue?.toString().length > 0)
+    hasFocus || autofilled || (currentValue?.toString() && currentValue?.toString().length > 0)
       ? 'input--label-up'
       : ''
 
@@ -60,20 +95,11 @@ export function InputText({
       : ''
 
   return (
-    <div
-      className={className}
-      onClick={() => inputRef.current?.querySelector('input')?.focus()}
-    >
+    <div className={className} onClick={() => inputRef.current?.querySelector('input')?.focus()}>
       <div className='relative'>
-        <div
-          className={cn('input', inputActions, hasError, hasLabelUp)}
-          ref={inputRef}
-        >
+        <div className={cn('input', inputActions, hasError, hasLabelUp)} ref={inputRef}>
           <div>
-            <label
-              htmlFor={label}
-              className={cn(hasFocus ? 'text-xs' : 'translate-y-2 text-sm')}
-            >
+            <label htmlFor={label} className={cn(hasFocus ? 'text-xs' : 'translate-y-2 text-sm')}>
               {label}
               {required && (
                 <span aria-hidden='true' className='ml-0.5 text-destructive'>
@@ -92,7 +118,14 @@ export function InputText({
               aria-required={required || undefined}
               autoComplete={autoComplete}
               value={currentValue}
+              onAnimationStart={(e) => {
+                if (e.animationName === 'fk-autofill-start') {
+                  setAutofilled(true)
+                }
+              }}
               onChange={(e) => {
+                // real input from here on: let the value drive the label
+                setAutofilled(false)
                 if (!onChange) return
 
                 if (type === 'number') {
@@ -113,25 +146,18 @@ export function InputText({
               <div
                 className='absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-muted-foreground'
                 onClick={() => {
-                  setCurrentType(
-                    currentType === 'password' ? 'text' : 'password'
-                  )
-
+                  setCurrentType(currentType === 'password' ? 'text' : 'password')
                 }}
               >
                 {currentType === 'password' && <Eye className='text-sm' />}
-                {currentType !== 'password' && (
-                  <EyeClosed className='text-sm' />
-                )}
+                {currentType !== 'password' && <EyeClosed className='text-sm' />}
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {error && (
-        <p className='mt-0.5 px-3 text-xs font-medium text-destructive'>{error}</p>
-      )}
+      {error && <p className='mt-0.5 px-3 text-xs font-medium text-destructive'>{error}</p>}
     </div>
   )
 }

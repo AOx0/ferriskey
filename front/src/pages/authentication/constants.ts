@@ -7,6 +7,9 @@ void preloadNamespaces(AUTH_NAMESPACE).catch(() => undefined)
 
 export const BRAND_NAME = 'FerrisKey'
 
+// Wordmark on the Hamoc-themed auth shell (fork): a brand, never translated.
+export const HAMOC_BRAND = 'hamoc'
+
 export const PORTAL_PAGE_TYPE = {
   LOGIN: 'login',
   REGISTER: 'register',

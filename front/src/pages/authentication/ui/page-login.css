@@ -1,15 +1,211 @@
+/* Hamoc auth shell — "compact console" look: the sign-in screen is
+   presented like a resource page of the ops console itself. Slim top
+   bar, a "data sheet" card (header strip / dense body / footer strip),
+   6px radius everywhere, Inter. Tokens come from App.css. */
+
 .login-shell {
-  background: white;
+  background: var(--secondary);
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+/* ---- top bar -------------------------------------------------------- */
+.auth-topbar {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+}
+.auth-topbar .auth-crumb b {
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.auth-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px 40px;
+  width: 100%;
+}
+.auth-narrow {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* ---- sheet card ---------------------------------------------------- */
+.login-card {
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(23, 26, 31, 0.05);
+  /* the Card primitive ships py-6 + gap-6; the sheet manages its own
+     internal rhythm via the header/body/footer strips */
+  padding: 0 !important;
+  gap: 0 !important;
+}
+.dark .login-card {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.auth-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--secondary);
+}
+.auth-sheet-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--card-foreground);
+}
+.auth-sheet-ref {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+.auth-sheet-body {
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+}
+.auth-sheet-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--secondary);
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.auth-sheet-foot a {
+  color: var(--primary);
+  font-weight: 500;
+  text-decoration: none;
+}
+.auth-sheet-foot a:hover {
+  text-decoration: underline;
+}
+
+/* ---- density -------------------------------------------------------- */
+/* Fields: the floating-label wrapper stays (tests + a11y rely on the
+   DOM structure), we only compact it. The geometry must survive user
+   font clamps (Firefox "minimum font size", Linux DPI scaling): the
+   raised label gets real headroom, pins to the top, and paints above
+   the input — otherwise the autofill repaint decapitates it. */
+.login-card .input {
+  min-height: 52px;
+  border-radius: 6px !important;
+  background: var(--background);
+}
+.login-card .input label {
+  z-index: 1;
+  line-height: 1.15;
+}
+.login-card .input:not(.input--label-up):not(.input--focused) label {
+  translate: 0 15px !important;
+}
+.login-card .input.input--label-up label,
+.login-card .input.input--focused label {
+  translate: 0 4px !important;
+}
+.login-card .input .input__value {
+  bottom: 6px;
+}
+.login-card button {
+  border-radius: 6px !important;
+}
+
+/* OTP digit boxes: quiet, even-spaced digits instead of fridge magnets */
+.login-card [data-slot='input-otp-slot'],
+.auth-narrow [data-slot='input-otp-slot'] {
+  background: var(--background);
+  border-radius: 6px !important;
+  border: 1px solid var(--input);
+  margin: 0 2px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 16px;
+  font-weight: 500;
+}
+.login-card [data-slot='input-otp-slot'][data-active='true'],
+.auth-narrow [data-slot='input-otp-slot'][data-active='true'] {
+  border-color: var(--ring);
+  /* replaces the default 3px ring */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 16%, transparent);
+  outline: none;
 }
 
 .login-title {
   font-family: inherit;
 }
 
-.login-card {
-  border-radius: 8px;
+/* ---- browser autofill ------------------------------------------------ */
+/* The UA paints autofilled inputs opaque light-yellow, which wrecks the
+   dark theme; background-color is ignored there, so repaint via the
+   inset box-shadow trick. The floating label is raised by InputText
+   itself through the fk-autofill-start animation hook (index.css). */
+.login-card input:-webkit-autofill,
+.login-card input:-webkit-autofill:hover,
+.login-card input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-box-shadow: inset 0 0 0 1000px var(--background);
+  box-shadow: inset 0 0 0 1000px var(--background);
+  caret-color: var(--foreground);
+}
+.login-card input:autofill {
+  -webkit-text-fill-color: var(--foreground);
+  background-color: var(--background) !important;
+  box-shadow: inset 0 0 0 1000px var(--background);
+  caret-color: var(--foreground);
 }
 
-.dark .login-shell {
-  background: black;
+/* ---- status banners (success / warning) ------------------------------ */
+/* Error red stays reserved for errors; these are the theme-aware
+   info/warning/success companions. */
+.auth-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+.auth-banner--success {
+  border-left-color: #3d8a5a;
+  background: rgba(61, 138, 90, 0.1);
+  color: #2f6b47;
+}
+.auth-banner--warning {
+  border-left-color: #b07a2a;
+  background: rgba(176, 122, 42, 0.1);
+  color: #8a5f20;
+}
+.dark .auth-banner--success {
+  background: rgba(87, 171, 125, 0.12);
+  color: #7cc79b;
+}
+.dark .auth-banner--warning {
+  background: rgba(206, 150, 60, 0.12);
+  color: #d9a75f;
 }

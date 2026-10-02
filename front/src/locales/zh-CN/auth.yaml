@@ -14,6 +14,13 @@
 # STATUS: awaiting native review. Strings marked "REVIEW" are the ones where a native reader's
 # judgement matters most.
 
+# Frame of the Hamoc-themed auth pages: breadcrumb and the tag in the card header.
+shell:
+  crumb: 域 / <realm>{{realm}}</realm> / 身份验证
+  ref:
+    security: 安全
+    device: 设备
+
 actions:
   back_to_login: 返回登录页
   cancel: 取消
@@ -21,6 +28,7 @@ actions:
 login:
   # Shown as the heading when the realm has no display name of its own.
   title: 登录
+  continue_to: 验证身份以继续访问<app>{{name}}</app>。
   identifier:
     username: 用户名
     email: 邮箱
@@ -56,6 +64,7 @@ providers:
 register:
   # Shown as the heading when the realm name is missing from the URL.
   title: 创建账户
+  already_registered: 已有账户？
   username: 用户名
   email: 邮箱
   password: 密码
@@ -120,6 +129,8 @@ update_password:
 
 otp:
   title: 验证码
+  # Small tag in the card header naming the step.
+  ref: 双重验证
   description: 请输入您的身份验证器应用中显示的 6 位验证码。
   description_for: 请输入您的身份验证器应用中为 <account>{{email}}</account> 显示的 6 位验证码。
   hint: 粘贴您的验证码，或逐位输入。
@@ -130,6 +141,8 @@ otp:
   invalid: OTP 验证码无效，请重试。
 
 configure_otp:
+  # Numbered step heading on the setup page, e.g. "1 · Install an authenticator app".
+  step_label: '{{step}} · {{title}}'
   title: 启用双因素认证
   description: 使用 TOTP 身份验证器应用为您的账户增加一层保护。
   step_app:

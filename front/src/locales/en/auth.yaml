@@ -2,6 +2,13 @@
 # Keep the wording plain and avoid the console's vocabulary: a visitor here
 # does not know what a realm, a client, a scope or a credential is.
 
+# Frame of the Hamoc-themed auth pages: breadcrumb and the tag in the card header.
+shell:
+  crumb: realms / <realm>{{realm}}</realm> / authentication
+  ref:
+    security: security
+    device: device
+
 actions:
   back_to_login: Back to login
   cancel: Cancel
@@ -9,6 +16,7 @@ actions:
 login:
   # Shown as the heading when the realm has no display name of its own.
   title: Login
+  continue_to: Authenticate to continue to <app>{{name}}</app>.
   identifier:
     username: Username
     email: Email
@@ -46,6 +54,7 @@ register:
   firstname: Firstname
   lastname: Lastname
   submit: Create Account
+  already_registered: Already registered?
   failed: We could not create your account. Please try again.
 
 magic_link:
@@ -109,8 +118,12 @@ otp:
   submit: Sign in
   submitting: Signing in...
   invalid: Invalid OTP code, please try again.
+  # Small tag in the card header naming the step.
+  ref: two-factor
 
 configure_otp:
+  # Numbered step heading on the setup page, e.g. "1 · Install an authenticator app".
+  step_label: '{{step}} · {{title}}'
   title: Enable two-factor authentication
   description: Secure your account with an additional layer of protection using a TOTP authenticator app.
   step_app:

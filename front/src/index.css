@@ -126,18 +126,21 @@
 }
 
 /* time input styling */
-input[type="time"], input[type="date"], input[type="datetime-local"] {
+input[type='time'],
+input[type='date'],
+input[type='datetime-local'] {
   &::-webkit-calendar-picker-indicator {
     background: none;
     display: none;
   }
 }
 
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 
-  &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
@@ -295,4 +298,22 @@ html {
 :root[data-style='ferriskey'] [data-slot='tooltip-content'] svg {
   background-color: var(--color-fk-surface);
   fill: var(--color-fk-surface);
+}
+
+/* Autofill detection hook: browsers fire animationstart for keyframes
+   matched via :autofill even though no input event ever reaches React.
+   InputText listens for this exact name to raise its floating label. */
+@keyframes fk-autofill-start {
+  from {
+    opacity: 0.999;
+  }
+  to {
+    opacity: 1;
+  }
+}
+input:autofill {
+  animation: fk-autofill-start 0.001s;
+}
+input:-webkit-autofill {
+  animation: fk-autofill-start 0.001s;
 }
